@@ -1,0 +1,250 @@
+{% extends 'ebos2210/reports/t10_master.html' %}
+{% block content %}
+    <style>
+      .subledger, .issued{
+        font-weight: 400;
+      }
+
+      /* ref & paid css */
+      .ref-label, .paid-label{
+        width: 8%;
+        font-weight: bold;
+        vertical-align: top;
+      }
+      .ref-colon, .paid-colon{
+        width: 2%;
+        font-weight: bold;
+        vertical-align: top;
+      }
+
+      .paid-content{
+        vertical-align: top;
+        width: 67%;
+      }
+
+      .paid-empty{
+        width: 77%
+      }
+
+      .voucher-label{
+        font-weight: bold;
+        vertical-align: top;
+      }
+
+      .voucher-colon{
+        width: 5%;
+        font-weight: bold;
+        vertical-align: top;
+      }
+
+      .voucher-content{
+        vertical-align: top;
+      }
+
+      /* Main container */
+      .main-container{
+        margin-top: 10px;
+      }
+
+      .content-heading{
+        border-top: 2px solid #000;
+        border-bottom: 2px solid #000;
+        padding-top: 5px;
+      }
+
+      .main-container > table > tbody > tr{
+        padding-top: 5px;
+        vertical-align: top;
+      }
+
+      .acc-num{
+        width: 8%;
+        vertical-align: top;
+      }
+
+      .acc-cont{
+        width: 35%;
+        vertical-align: top;
+      }
+
+      .subledger{
+        width: 27%;
+        vertical-align: top;
+      }
+
+      .debit, .credit{
+        width: 15%;
+        text-align: right;
+        vertical-align: top;
+      }
+
+      .num{
+        text-align: right;
+      }
+
+      .in-word{
+        font-size: 10px;
+      }
+
+      /* sign content css */
+      .sign-container{
+        vertical-align: bottom;
+        margin-top: 100px;
+      }
+
+      .sign-table{
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      .line {
+        padding-bottom: 10px;
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+    </style>
+
+    <!-- paid to and voucher start  -->
+    <div class="paid-container">
+      <table class="paid-table">
+        <tr>
+          {% if prg_type != 'JVM' %}
+          <td class="paid-label">Paid To</td>
+          <td class="paid-colon">: </td>
+          <td class="paid-content">
+            <div class="subledger">{{ voucher.subledger.subledger_name|default_if_none:"" }}</div>
+            <div class="company-address">{{ voucher.subledger.invoice_address1|default_if_none:"" }}</div>
+            <div class="company-address">{{ voucher.subledger.invoice_address2|default_if_none:"" }}</div>
+            <div class="company-address">{{ voucher.subledger.invoice_address3|default_if_none:"" }}</div>
+            <div class="issued">{{ voucher.issued_to|default_if_none:"" }}</div>
+          </td>
+          {% else %}
+          <td class="paid-empty"></td>
+          {% endif %}
+          <td class="voucher-content">
+            <table class="voucher-table">
+              <tr>
+                <td class="voucher-label">Voucher</td>
+                <td class="voucher-colon">:</td>
+                <td class="voucher-content">{{ voc_num }}</td>
+              </tr>
+              <tr>
+                <td class="voucher-label">Date</td>
+                <td class="voucher-colon">:</td>
+                <td class="voucher-content">{{ voucher.vou_date|date:"d/m/Y" }}</td>
+              </tr>
+              <tr>
+                <td class="voucher-label">Status</td>
+                <td class="voucher-colon">:</td>
+                <td class="voucher-content">
+                  {% if voucher.post_flag %}
+                    Posted
+                  {% else %}
+                    Unposted
+                  {% endif %}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <!-- paid to and voucher end  -->
+    <br>
+    <!-- ref start  -->
+    <table class="ref-table">
+      <tr>
+        <td class="ref-label">Ref.#</td>
+        <td class="ref-colon">: </td>
+        <td class="ref-content">{{ voucher.vou_hdr_ref|default_if_none:"" }}</td>
+      </tr>
+      <tr>
+        <td class="ref-label">Being</td>
+        <td class="ref-colon">: </td>
+        <td class="ref-content">
+          <p>{{ voucher.comment1|default_if_none:"" }}</p>
+          <p>{{ voucher.comment2|default_if_none:"" }}</p>
+        </td>
+      </tr>
+    </table>
+    <!-- ref end  -->
+
+    <div class="main-container">
+      <!-- table start -->
+      <table repeat="1">
+        <thead>
+          <tr class="content-heading">
+            <th style="text-align: left">A/C#</th>
+            <th style="text-align: center">Account Name</th>
+            <th style="text-align: center">SubLedger</th>
+            <th style="text-align: center">Debit</th>
+            <th style="text-align: center">Credit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for gld11 in voucher.gld_header_set.all %}
+          <tr>
+            <td class="acc-num">{{ gld11.vou_coa.account_num }}</td>
+            <td class="acc-cont">
+              <span class="title">{{ gld11.vou_coa.account_name }}</span>
+              {% if gld11.chq_num %}
+              <br />
+              <span class="chq-num">{{ gld11.chq_num|default_if_none:"" }}</span> &nbsp;
+              <span class="chq-date">{{ gld11.chq_date|date:"d/m/Y"|default_if_none:"" }}</span> &nbsp;
+              <span class="chq-status">{{ gld11.get_chq_status_display|default_if_none:"" }}</span>
+              {% endif %}
+              {% if gld11.narration %}
+              <br />
+              <span class="comment">{{ gld11.narration }}</span>
+              {% else %}
+              <br />
+              <span class="comment">{{ voucher.comment1|default_if_none:"" }}</span>
+              <span class="comment">{{ voucher.comment2|default_if_none:"" }}</span>
+              {% endif %}
+            </td>
+            <td class="subledger">{{ gld11.vou_subledger.subledger_name }}</td>
+            <td class="debit">{{ gld11.bcurr_debit }}</td>
+            <td class="credit">{{ gld11.bcurr_credit }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr class="content-footer">
+            <td colspan="3" class="in-word">{{ total_in_word }}</td>
+            <td class="num">{{ total_debit|floatformat:2 }}</td>
+            <td class="num">{{ total_credit|floatformat:2 }}</td>
+          </tr>
+        </tfoot>
+      </table>
+      <!-- table end  -->
+
+
+    </div>
+    <!-- content end  -->
+    <div class="sign-container">
+      <table class="sign-table">
+        <tr>
+          {% if prg_type != 'JVM' %}
+          <td class="line"><hr></td>
+          <td class="line"><hr></td>
+          {% endif %}
+          <td class="line"><hr></td>
+          <td class="line"><hr></td>
+        </tr>
+        <tr>
+          {% if prg_type != 'JVM' %}
+            <td class="sign-content">Prepared By</td>
+            <td class="sign-content">Verified By</td>
+            <td class="sign-content">Approved By</td>
+            <td class="sign-content">Received By</td>
+          {% else %}
+            <td class="sign-content">Accountant</td>
+            <td class="sign-content">Approved By</td>
+          {% endif %}
+        </tr>
+      </table>
+  </div>
+  
+{% endblock content %}

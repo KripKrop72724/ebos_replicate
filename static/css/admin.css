@@ -1,0 +1,54 @@
+/* Gl voucher styles */
+.total-vou, total-gl{
+    font-weight: bold;
+}
+
+input[type=number] {
+    max-width: 100px;
+    text-align: right;
+}
+
+.bcurr_debit>div,
+.bcurr_credit>div,
+.fcurr_debit>div,
+.fcurr_credit>div,
+.curr_rate>div,
+.debit_id>div,
+.debit_vou>div,
+.debit_open>div,
+.debit_alloc>div,
+.credit_id>div,
+.credit_vou>div,
+.credit_open>div,
+.credit_alloc>div,
+.gl_debit>div,
+.gl_credit>div,
+.alloc_amt_tot>div,
+.stmt_debit>div,
+.stmt_credit>div,
+.number {
+    text-align: right;
+}
+
+.number {
+    padding-right: 10px;
+}
+
+
+/* no-more-warnings.css */
+
+.timezonewarning {
+    display: none;
+}
+
+/* print button css  */
+.print-btn{
+    background-color: #4CAF50; /* Green */
+    border: none;
+    border-radius: 3px;
+    color: white;
+    padding: 5px 7px;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+}

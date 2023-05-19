@@ -1,0 +1,141 @@
+{% extends 'ebos2210/reports/t10_master.html' %}
+{% load gl_balance %}
+
+{% block content %}
+    <style>
+        .ul {
+            list-style: none !important;
+        }
+        .opening-balance {
+            text-align: right;
+        }
+        p{
+            margin: 0;
+            margin-bottom: 4px;
+        }
+        tr{
+            vertical-align: center;
+        }
+        .content-heading{
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+            padding-top: 5px;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        thead > tr > th{
+            text-align: center;
+        }
+        tbody > tr > td{
+            vertical-align: top;
+        }
+        .voc-date{
+            width: 12%;
+        }        
+        .voc-type{
+            width: 12%;
+        }
+        .narration-cont{
+            width: 20%;
+        }
+    </style>
+
+    <!-- header start  -->
+    <div class="header-container">
+        <table>
+            <tr>
+                <td style="vertical-align: bottom; width: 67%;"><p><b>Ledger A/C :</b> &nbsp;&nbsp;&nbsp; {{ subledger|default_if_none:"----" }}</p></td>
+                <td>
+                    <table>
+                        <tr>
+                            <td style="width: 28%;"><b>Period:</b></td>
+                            <td>{{ from_date|date:"d/m/Y" }} <b>  &nbsp;&nbsp;to&nbsp;&nbsp; </b>{{ to_date|date:"d/m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Currency:</b></td>
+                            <td>{{ currency }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <table style="margin-top: 20px; margin-bottom: 20px;">
+            <tr>
+                <th class="opening-balance" colspan="4">
+                    Opening Balance:
+                </th>
+                <td style="text-align: right;">
+                    {{ debit|handle_negative }}
+                </td>
+                <td  style="text-align: right;">{{ credit|handle_negative }}</td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+    </div>
+    <!-- header end  -->
+
+    <!-- main content start  -->
+    <table repeat="1">
+        <thead>
+            <tr class="content-heading">
+                <th>Date</th>
+                <th>Voc Ref #</th>
+                <th>Inv/Chq Ref #</th>
+                <th>Comment</th>
+                <th>Debit</th>
+                <th>Credit</th>
+                <th>Balance</th>
+            </tr>
+        </thead>
+        <tbody >
+            {% for voc in vouchers %}
+            <tr style="padding-top: 5px;">                
+                <td class="voc-date text-center">{{ voc.vou_id.vou_date|date:"d/m/Y" }}</td>
+                <td class="voc-type">
+                    {{ voc.vou_id.vou_type.voucher_type }} &nbsp; {{ voc.vou_id.vou_num }}
+                </td>
+                <td>{{ voc.vou_line_ref|default_if_none:"Inv-#" }}</td>
+                <td class="narration-cont">
+                    {% if voc.narration %}
+                        {{ voc.narration }}
+                    {% else %}
+                        {{ voc.comment1|default_if_none:"" }}
+                    {% endif %}
+                </td>
+                <td class="text-right">{{ voc.bcurr_debit|handle_negative }}</td>
+                <td class="text-right">{{ voc.bcurr_credit|handle_negative }}</td>
+                <td class="text-right">{{ balances|balance:forloop.counter0 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td style="padding-top: 5px; text-align: center;" colspan="7">No voucher found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr style="padding-top: 5px; border-top: 1px solid black;">
+                <th class="opening-balance" colspan="4">
+                    Total Debit and Credit For Selected Date 
+                </th>
+                <td style="text-align: right;">
+                    {{ debit_total|handle_negative }}
+                </td>
+                <td  style="text-align: right;">{{ credit_total|handle_negative }}</td>
+            </tr>
+            <tr style="padding-top: 5px;">
+                <th class="opening-balance" colspan="4">
+                    Closing Balance
+                </th>
+                <td style="text-align: right;"> {{ cls_debit|handle_negative }}</td>
+                <td  style="text-align: right;"> {{ cls_credit|handle_negative }}</td>
+            </tr>
+        </tfoot>
+    </table>
+    <!-- main content end  -->
+
+{% endblock content %}

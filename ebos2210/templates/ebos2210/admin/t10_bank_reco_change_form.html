@@ -1,0 +1,155 @@
+{% extends "admin/change_form.html" %}
+
+{% block field_sets %}
+
+{{block.super}}
+
+<script>
+
+function doStuff()
+{
+    // Do some things
+    setTimeout(continueExecution, 200) // Wait one seconds before continuing
+}doStuff()
+
+function continueExecution() {
+    let total_val = document.getElementById('id_t10brc11_set-TOTAL_FORMS').value;
+    if(total_val > 0){
+        // Replace inline last row
+        document.getElementById('t10brc11_set-group').getElementsByClassName('grp-table')[0].innerHTML += '<div class="grp-module grp-tbody">' +
+                                                                                                                '<div class="grp-tr">' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"></div>'+
+                                                                                                                    '<div class="grp-td"><p class="total-gl">Total</p></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"><p class="gl_db_t number">0.00</p></div>' +
+                                                                                                                    '<div class="grp-td"><p class="gl_cr_t number">0.00</p></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                '</div>'+
+                                                                                                            '</div>';
+
+        // gl debit calculate the total values
+        let glDbInput = document.getElementsByClassName("gl_debit")
+        let gl_db_numbers = [];
+
+        function glDbFunc(){
+            let gl_db_total = 0;
+            gl_db_numbers = [];
+
+            for (let i = 0; i < glDbInput.length; i++) {
+                let value = 0
+                let dbInput = glDbInput[i].querySelector('input')
+                let dbInputReadonly = glDbInput[i].querySelector('div')
+                if (dbInput){
+                    value = dbInput.value
+                }else if (dbInputReadonly){
+                    value = dbInputReadonly.innerText
+                }
+
+                gl_db_numbers.push(value)
+            }
+            // dispaly the total
+            gl_db_numbers.map((num) => gl_db_total+=parseFloat(num))
+            document.getElementsByClassName('gl_db_t')[0].innerText = Number(gl_db_total).toFixed(2)
+        }
+        glDbFunc()
+
+        // gl credit calculate the total values
+        let glCrInput = document.getElementsByClassName("gl_credit")
+        let gl_cr_numbers = [];
+
+        function glCrFunc(){
+            let gl_cr_total = 0;
+            gl_cr_numbers = [];
+
+            for (let i = 0; i < glCrInput.length; i++) {
+                let value = 0
+                let dbInput = glCrInput[i].querySelector('input')
+                let dbInputReadonly = glCrInput[i].querySelector('div')
+                if (dbInput){
+                    value = dbInput.value
+                }else if (dbInputReadonly){
+                    value = dbInputReadonly.innerText
+                }
+
+                gl_cr_numbers.push(value)
+            }
+            // dispaly the total
+            gl_cr_numbers.map((num) => gl_cr_total+=parseFloat(num))
+            document.getElementsByClassName('gl_cr_t')[0].innerText = Number(gl_cr_total).toFixed(2)
+        }
+        glCrFunc()
+    }
+
+
+    let total_stmt_val = document.getElementById('id_t10brc12_set-TOTAL_FORMS').value;
+    if(total_stmt_val > 0){
+        // Replace inline last row
+        document.getElementById('t10brc12_set-group').getElementsByClassName('grp-table')[0].innerHTML += '<div class="grp-module grp-tbody">' +
+                                                                                                                '<div class="grp-tr">' +
+                                                                                                                    '<div class="grp-td"><p class="total-gl">Total</p></div>' +
+                                                                                                                    '<div class="grp-td"><p class="stmt_db_t number">0.00</p></div>' +
+                                                                                                                    '<div class="grp-td"><p class="stmt_cr_t number">0.00</p></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                '</div>'+
+                                                                                                            '</div>';
+
+        // stmt debit calculate the total values
+        let stmtDbInput = document.getElementsByClassName("stmt_debit")
+        let stmt_db_numbers = [];
+
+        function stmtDbFunc(){
+            let stmt_db_total = 0;
+            stmt_db_numbers = [];
+
+            for (let i = 0; i < stmtDbInput.length; i++) {
+                let value = 0
+                let dbInput = stmtDbInput[i].querySelector('input')
+                let dbInputReadonly = stmtDbInput[i].querySelector('div')
+                if (dbInput){
+                    value = dbInput.value
+                }else if (dbInputReadonly){
+                    value = dbInputReadonly.innerText
+                }
+
+                stmt_db_numbers.push(value)
+            }
+            // dispaly the total
+            stmt_db_numbers.map((num) => stmt_db_total+=parseFloat(num))
+            document.getElementsByClassName('stmt_db_t')[0].innerText = Number(stmt_db_total).toFixed(2)
+        }
+        stmtDbFunc()
+
+        // stmt credit calculate the total values
+        let stmtCrInput = document.getElementsByClassName("stmt_credit")
+        let stmt_cr_numbers = [];
+
+        function stmtCrFunc(){
+            let stmt_cr_total = 0;
+            stmt_cr_numbers = [];
+
+            for (let i = 0; i < stmtCrInput.length; i++) {
+                let value = 0
+                let dbInput = stmtCrInput[i].querySelector('input')
+                let dbInputReadonly = stmtCrInput[i].querySelector('div')
+                if (dbInput){
+                    value = dbInput.value
+                }else if (dbInputReadonly){
+                    value = dbInputReadonly.innerText
+                }
+
+                stmt_cr_numbers.push(value)
+            }
+            // dispaly the total
+            stmt_cr_numbers.map((num) => stmt_cr_total+=parseFloat(num))
+            document.getElementsByClassName('stmt_cr_t')[0].innerText = Number(stmt_cr_total).toFixed(2)
+        }
+        stmtCrFunc()
+    }
+}
+</script>
+{% endblock %}

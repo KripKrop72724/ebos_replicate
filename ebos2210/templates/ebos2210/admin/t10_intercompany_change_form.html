@@ -1,0 +1,72 @@
+{% extends "admin/change_form.html" %}
+
+{% block field_sets %}
+
+{{block.super}}
+
+<script>
+    // on change company
+    document.getElementById("id_company").addEventListener('change', function(e){
+        let company= e.target.value;
+
+        // Url for the request
+        var url = 'get_division/' + company;
+        // Making our request
+        fetch(url, {
+                method: 'GET',
+                headers:{
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            })
+            .then(response => response.json())
+            .then(data => {
+                var options = '<option value="">---------</option>';
+                for (var i = 0; i < data.divisions.length; i++) {
+                    options += '<option value="' + data.divisions[i].id + '">' + data.divisions[i].division_name + '</option>';
+                }
+
+                document.getElementById("id_division").innerHTML  = options;
+            })
+            .catch(errorMsg => { console.log(errorMsg); });
+        });
+
+    // on change division
+    document.getElementById("id_division").addEventListener('change', function(e){
+        let division= e.target.value;
+
+        // Url for the request
+        var url = 'get_coa_sl/' + division;
+        // Making our request
+        fetch(url, {
+                method: 'GET',
+                headers:{
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            })
+            .then(response => response.json())
+            .then(data => {
+                // get coa
+                var coa_options = '<option value="">---------</option>';
+                for (var i = 0; i < data.coas.length; i++) {
+                    coa_options += '<option value="' + data.coas[i].id + '">' + data.coas[i].account_name + '</option>';
+                }
+
+                document.getElementById("id_from_coa").innerHTML  = coa_options;
+                document.getElementById("id_ic_coa").innerHTML  = coa_options;
+
+                // get sl
+                var sl_options = '<option value="">---------</option>';
+                for (var i = 0; i < data.subledgers.length; i++) {
+                    sl_options += '<option value="' + data.subledgers[i].id + '">' + data.subledgers[i].subledger_name + '</option>';
+                }
+
+                document.getElementById("id_from_sl").innerHTML  = sl_options;
+            })
+            .catch(errorMsg => { console.log(errorMsg); });
+        });
+
+</script>
+
+{% endblock %}

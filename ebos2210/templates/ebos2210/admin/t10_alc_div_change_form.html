@@ -1,0 +1,40 @@
+{% extends "admin/change_form.html" %}
+
+{% block field_sets %}
+
+{{block.super}}
+
+<script>
+
+    // on change division
+    if (document.getElementById("id_division")){
+        document.getElementById("id_division").addEventListener('change', function(e){
+            let division = e.target.value;
+
+            // Url for the request
+            var url = 'fetch_t10cfg10/' + division;
+            console.log(url)
+            // Making our request
+            fetch(url, {
+                    method: 'GET',
+                    headers:{
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+                },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // 'vou_curr'   >>  default to base_curr, but selectable from T01Cur10
+                    console.log(data)
+                    if(data.division_curr){
+                        document.getElementById("id_currency").value = data.division_curr;
+                    }
+                })
+                .catch(errorMsg => { console.log(errorMsg); });
+            });
+    }
+
+
+
+</script>
+{% endblock %}

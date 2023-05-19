@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Welcome to ebos22</title>
+	{% load static %}
+	<link href="{% static '/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet" type= "text/css">
+	<script src="{% static '/bootstrap/js/bootstrap.min.js'%}"></script>
+<style>
+
+	.container{
+		height: 100%;
+	}
+	.card{
+
+		width: 600px;
+		padding: 20px;
+		border:none;
+	}
+
+	.account{
+
+			font-weight: 500;
+		font-size: 17px;
+	}
+	.contact{
+
+			font-size: 13px;
+	}
+
+	.form-control{
+	   text-indent: 14px;
+	}
+
+	.form-control:focus {
+		color: #495057;
+		background-color: #fff;
+		border-color: #4a148c;
+		outline: 0;
+		box-shadow: none;
+	}
+
+	.inputbox{
+
+		margin-bottom: 10px;
+		position: relative;
+	}
+
+	.inputbox i{
+
+		position: absolute;
+		left: 8px;
+		top: 12px;
+		color: #dadada;
+	}
+
+
+	.form-check-label{
+
+		font-size: 13px;
+	}
+
+	.form-check-input {
+		width: 14px;
+		height: 15px;
+		margin-top: 5px;
+
+	}
+
+	.forgot {
+		font-size: 14px;
+		text-decoration: none;
+		color: #4A148C;
+	}
+
+	.mail{
+
+		color: #4a148c;
+		text-decoration: none;
+	}
+
+	.form-check{
+
+		cursor: pointer;
+	}
+
+	.btn-primary {
+		color: #fff;
+		border: 0;
+		background-image: linear-gradient(to right, #6fc071,#189ba5,#8ad4b7);
+		padding: 10px;
+	}
+	#signup_form{
+		padding: 0px 120px 0;
+	}
+	#success_msg{
+		padding: 1rem 0rem;
+	}
+
+
+</style>
+</head>
+<body>
+	{% load static %}
+	<div class="container">
+		<div class="row" id="main-box">
+
+			<div class="col-lg-12 col-sm-12">
+				<div class="text-center intro">
+					<img src = {%static 'img/image.png' %} width="250">
+				</div>
+
+			</div>
+
+			<div class="col-lg-12 col-sm-12 mt-3">
+				<div class="container height-100 d-flex justify-content-center align-items-center">
+					<div class="position-relative">
+						<div class="card p-2 text-center">
+							<form method="post" action="{% url 'index' %}verifying/" id="otp_form" enctype="multipart/form-data" >
+							{% csrf_token %}
+							<h6>Please enter the one time password <br> to login into your account</h6>
+							<div> <span>A code has been sent to</span> <small>Email</small> </div>
+							<div id="otp" class="inputs d-flex flex-row justify-content-center mt-2">
+								<input class="m-2 text-center form-control rounded" type="text" id="first" maxlength="1" name="first"/>
+								<input class="m-2 text-center form-control rounded" type="text" id="second" maxlength="1" name="second"/>
+								<input class="m-2 text-center form-control rounded" type="text" id="third" maxlength="1" name="third"/>
+								<input class="m-2 text-center form-control rounded" type="text" id="fourth" maxlength="1" name="fourth" />
+								<input class="m-2 text-center form-control rounded" type="text" id="fifth" maxlength="1" name="fifth" />
+								<input class="m-2 text-center form-control rounded" type="text" id="sixth" maxlength="1" name="sixth" />
+							 </div>
+							 {% comment %} <div class="mt-3" style="text-align:center">
+								<a href="#">Resend OTP</a>
+							</div> {% endcomment %}
+							<div class="mt-4"> <button class="btn btn-primary px-4 validate">Validate</button> </div>
+							{% if otp_msg and class %}
+							<div class="alert alert-{{class}} mt-3 text-center" role="alert" id="success_msg">
+								{{otp_msg}}
+							</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+
+</body>
+</html>

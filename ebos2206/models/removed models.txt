@@ -1,0 +1,32 @@
+# class T06Enc10(models.Model):
+# 	employee_code = models.ForeignKey('T06EMP10', models.PROTECT, db_column='IDemployee',null=True)
+# 	encash_year = models.IntegerField(db_column='nEncYear', null=True)
+# 	encash_month = models.IntegerField(db_column='nEncPeriod', null=True)
+# 	ENCASH_CHOICE = ( ('T', 'Encash Ticket'),('L','Encash Leave') )
+# 	encash_type = models.CharField(db_column='sEncashType', max_length=1,choices=ENCASH_CHOICE, default='L')
+# 	gl_code = models.ForeignKey('T01Glc10', models.PROTECT, db_column='sEncGLCode', max_length=5, blank=True, null=True)
+# 	encash_note = models.TextField(db_column='sEncNote', blank=True)
+# 	encash_days = models.FloatField(db_column='fEncDays', blank=True, null=True)
+# 	encash_amount = models.FloatField(db_column='fEncAmt', null=True)
+# 	encash_approver = models.ForeignKey('T06EMP10', models.PROTECT,related_name='encapprover',db_column='IDEncAprv', blank=True, null=True)
+# 	encash_approved_date = models.DateField(db_column='dtEncApproved', blank=True, null=True)
+
+# 	class Meta:
+# 		db_table = 'T06ENC10'
+# 		verbose_name = 'Encashment'
+
+# 	def __str__(self) -> str:
+# 		return f"{self.employee_code} {self.encash_month}-{self.encash_year}"
+
+
+# class T06Sts10(models.Model):
+#     status_desc = models.CharField(db_column='sStsName', max_length=50, blank=True)
+#     status_code = models.IntegerField(db_column='nStsCode', null=True)
+
+#     class Meta:
+#     #    managed = False
+#         db_table = 'T06STS10'
+#         verbose_name = 'Status Master'
+
+#     def __str__(self) -> str:
+#         return f"{self.status_code}"

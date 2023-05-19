@@ -1,0 +1,104 @@
+{% extends 'ebos2210/reports/t10_master.html' %}
+{% load gl_balance %}
+
+{% block content %}
+    <style>
+        .ul {
+            list-style: none !important;
+        }
+        .opening-balance {
+            text-align: right;
+        }
+        p{
+            margin: 0;
+            margin-bottom: 4px;
+        }
+        tr{
+            vertical-align: center;
+        }
+        .period {
+            text-align: right;
+        }
+        .content-heading{
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+            padding-top: 5px;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        thead > tr > th{
+            text-align: center;
+        }
+        tbody > tr > td{
+            vertical-align: top;
+        }
+        .acc-name{
+            width: 40%;
+        }
+    </style>
+
+    <!-- header start  -->
+    <div class="header-container">
+        <table style="padding: 12px;">
+            <tr>
+                <td>
+                    <p><b>Subledger :</b> &nbsp;&nbsp;&nbsp; {{ subledger|default_if_none:"----" }}</p>
+                </td>
+                <td>
+                    <p class="period"><b>As Of: </b> &nbsp;&nbsp;&nbsp;{{ as_of|date:"d/m/Y" }}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!-- header end  -->
+
+    <!-- main content start  -->
+    <table repeat="1">
+        <thead>
+            <tr class="content-heading">
+                <th>Account #</th>
+                <th>Account Name</th>
+                <th>Debit</th>
+                <th>credit</th>
+            </tr>
+        </thead>
+        <tbody >
+            {% for acc in accounts %}
+            <tr style="padding-top: 5px;">                
+                <td class="text-center">{{ acc.vou_coa__account_num }}</td>
+                <td class="acc-name">{{ acc.vou_coa__account_name }}</td>
+                <td class="text-right">{{ acc.bcurr_debit_sum|handle_negative }}</td>
+                <td class="text-right">{{ acc.bcurr_credit_sum|handle_negative }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td style="padding-top: 5px; text-align: center;" colspan="4">No accounts found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr style="padding-top: 5px; border-top: 1px solid black;">
+                <th class="opening-balance" colspan="2">
+                    Total For Selected Period: 
+                </th>
+                <td style="text-align: right;">
+                    {{ debit_total|handle_negative }}
+                </td>
+                <td  style="text-align: right;">{{ credit_total|handle_negative }}</td>
+            </tr>
+            <tr style="padding-top: 5px;">
+                <th class="opening-balance" colspan="2">
+                    Closing Balance:
+                </th>
+                <td style="text-align: right;"> {{ cls_debit|handle_negative }}</td>
+                <td  style="text-align: right;"> {{ cls_credit|handle_negative }}</td>
+            </tr>
+        </tfoot>
+    </table>
+    <!-- main content end  -->
+
+{% endblock content %}

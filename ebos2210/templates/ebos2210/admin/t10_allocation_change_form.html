@@ -1,0 +1,209 @@
+{% extends "admin/change_form.html" %}
+
+{% block field_sets %}
+
+{{block.super}}
+
+<script>
+
+function doStuff()
+{
+  // Do some things
+  setTimeout(continueExecution, 500) // Wait one seconds before continuing
+}doStuff()
+
+function continueExecution() {
+    // Replace inline last row
+    document.getElementById('allocation_db-group').getElementsByClassName('grp-table')[0].innerHTML += '<div class="grp-module grp-tbody">' +
+                                                                                                            '<div class="grp-tr">' +
+                                                                                                                '<div class="grp-td"><p class="total-vou">Total</p></div>' +
+                                                                                                                '<div class="grp-td"></div>'+
+                                                                                                                '<div class="grp-td"></div>' +
+                                                                                                                '<div class="grp-td"><p class="open_db_t number">0.00</p></div>' +
+                                                                                                                '<div class="grp-td"><p class="alloc_db_t number">0.00</p></div>' +
+                                                                                                                '<div class="grp-td"></div>' +
+                                                                                                            '</div>'+
+                                                                                                        '</div>';
+
+    // debit open calculate the total values
+    let openDbInput = document.getElementsByClassName("debit_open")
+    let open_db_numbers = [];
+
+    function openDbFunc(){
+        let open_db_total = 0;
+        open_db_numbers = [];
+
+        for (let i = 0; i < openDbInput.length; i++) {
+            let value = 0
+            let dbInput = openDbInput[i].querySelector('input')
+            let dbInputReadonly = openDbInput[i].querySelector('div')
+            if (dbInput){
+                value = dbInput.value
+            }else if (dbInputReadonly){
+                value = dbInputReadonly.innerText
+            }
+
+            open_db_numbers.push(value)
+        }
+        // dispaly the total
+        open_db_numbers.map((num) => open_db_total+=parseFloat(num))
+        document.getElementsByClassName('open_db_t')[0].innerText = Number(open_db_total).toFixed(2)
+    }
+    openDbFunc()
+
+    // on input function
+    for (let index = 0; index < openDbInput.length; index++) {
+        if (openDbInput[index].querySelector('input')){
+            openDbInput[index].querySelector('input').addEventListener('input', function(e){
+                let sum = 0
+                value = (e.target.value) ? (e.target.value) : 0
+                open_db_numbers.splice(index, 1, value);
+                open_db_numbers.map((num) => sum+=parseFloat(num))
+                open_db_total = sum
+                document.getElementsByClassName('open_db_t')[0].innerText = open_db_total.toFixed(2)
+            });
+        }else{
+            break;
+        }
+    }
+
+    // debit alloc calculate the total values
+    let allocDbInput = document.getElementsByClassName("debit_alloc")
+    let alloc_db_numbers = [];
+
+    function allocDbFunc(){
+        let alloc_db_total = 0;
+        alloc_db_numbers = [];
+
+        for (let i = 0; i < allocDbInput.length; i++) {
+            let value = 0
+            let dbInput = allocDbInput[i].querySelector('input')
+            let dbInputReadonly = allocDbInput[i].querySelector('div')
+            if (dbInput){
+                value = dbInput.value
+            }else if (dbInputReadonly){
+                value = dbInputReadonly.innerText
+            }
+
+            alloc_db_numbers.push(value)
+        }
+        // dispaly the total
+        alloc_db_numbers.map((num) => alloc_db_total+=parseFloat(num))
+        document.getElementsByClassName('alloc_db_t')[0].innerText = Number(alloc_db_total).toFixed(2)
+    }
+    allocDbFunc()
+
+    // on input function
+    for (let index = 0; index < allocDbInput.length; index++) {
+        if (allocDbInput[index].querySelector('input')){
+            allocDbInput[index].querySelector('input').addEventListener('input', function(e){
+                let sum = 0
+                value = (e.target.value) ? (e.target.value) : 0
+                alloc_db_numbers.splice(index, 1, value);
+                alloc_db_numbers.map((num) => sum+=parseFloat(num))
+                alloc_db_total = sum
+                document.getElementsByClassName('alloc_db_t')[0].innerText = alloc_db_total.toFixed(2)
+            });
+        }else{
+            break;
+        }
+    }
+
+    document.getElementById('allocation_cr-group').getElementsByClassName('grp-table')[0].innerHTML += '<div class="grp-module grp-tbody">' +
+                                                                                                            '<div class="grp-tr">' +
+                                                                                                                '<div class="grp-td"><p class="total-vou">Total</p></div>' +
+                                                                                                                '<div class="grp-td"></div>'+
+                                                                                                                '<div class="grp-td"></div>' +
+                                                                                                                '<div class="grp-td"><p class="open_CR_t number">0.00</p></div>' +
+                                                                                                                '<div class="grp-td"><p class="alloc_CR_t number">0.00</p></div>' +
+                                                                                                                '<div class="grp-td"></div>' +
+                                                                                                            '</div>'+
+                                                                                                        '</div>';
+
+
+    // credit open calculate the total values
+    let openCRInput = document.getElementsByClassName("credit_open")
+    let open_CR_numbers = [];
+
+    function openCRFunc(){
+        let open_CR_total = 0;
+        open_CR_numbers = [];
+
+        for (let i = 0; i < openCRInput.length; i++) {
+            let value = 0
+            let CRInput = openCRInput[i].querySelector('input')
+            let CRInputReadonly = openCRInput[i].querySelector('div')
+            if (CRInput){
+                value = CRInput.value
+            }else if (CRInputReadonly){
+                value = CRInputReadonly.innerText
+            }
+
+            open_CR_numbers.push(value)
+        }
+        // dispaly the total
+        open_CR_numbers.map((num) => open_CR_total+=parseFloat(num))
+        document.getElementsByClassName('open_CR_t')[0].innerText = Number(open_CR_total).toFixed(2)
+    }
+    openCRFunc()
+
+    // on input function
+    for (let index = 0; index < openCRInput.length; index++) {
+        if (openCRInput[index].querySelector('input')){
+            openCRInput[index].querySelector('input').addEventListener('input', function(e){
+                let sum = 0
+                value = (e.target.value) ? (e.target.value) : 0
+                open_CR_numbers.splice(index, 1, value);
+                open_CR_numbers.map((num) => sum+=parseFloat(num))
+                open_CR_total = sum
+                document.getElementsByClassName('open_CR_t')[0].innerText = open_CR_total.toFixed(2)
+            });
+        }else{
+            break;
+        }
+    }
+
+    // credit alloc calculate the total values
+    let allocCRInput = document.getElementsByClassName("credit_alloc")
+    let alloc_CR_numbers = [];
+
+    function allocCRFunc(){
+        let alloc_CR_total = 0;
+        alloc_CR_numbers = [];
+
+        for (let i = 0; i < allocCRInput.length; i++) {
+            let value = 0
+            let CRInput = allocCRInput[i].querySelector('input')
+            let CRInputReadonly = allocCRInput[i].querySelector('div')
+            if (CRInput){
+                value = CRInput.value
+            }else if (CRInputReadonly){
+                value = CRInputReadonly.innerText
+            }
+
+            alloc_CR_numbers.push(value)
+        }
+        // dispaly the total
+        alloc_CR_numbers.map((num) => alloc_CR_total+=parseFloat(num))
+        document.getElementsByClassName('alloc_CR_t')[0].innerText = Number(alloc_CR_total).toFixed(2)
+    }
+    allocCRFunc()
+
+    // on input function
+    for (let index = 0; index < allocCRInput.length; index++) {
+        if (allocCRInput[index].querySelector('input')){
+            allocCRInput[index].querySelector('input').addEventListener('input', function(e){
+                let sum = 0
+                value = (e.target.value) ? (e.target.value) : 0
+                alloc_CR_numbers.splice(index, 1, value);
+                alloc_CR_numbers.map((num) => sum+=parseFloat(num))
+                alloc_CR_total = sum
+                document.getElementsByClassName('alloc_CR_t')[0].innerText = alloc_CR_total.toFixed(2)
+            });
+        }else{
+            break;
+        }
+    }
+}
+</script>
+{% endblock %}

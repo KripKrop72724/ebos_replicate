@@ -1,0 +1,39 @@
+{% extends "admin/change_form.html" %}
+
+{% block field_sets %}
+
+{{block.super}}
+
+<script>
+    // on change division
+    document.getElementById("id_gl_code").addEventListener('change', function(e){
+        let gl_code = e.target.value;
+
+        // Url for the request
+        var url = 'get_gl_data/' + gl_code;
+        // Making our request
+        fetch(url, {
+                method: 'GET',
+                headers:{
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.gl_data == 'Disposed'){
+                    document.getElementById("id_salvage_amt").disabled = "true";
+                    document.getElementById("id_disposal_amt").removeAttribute('disabled');
+                }else if(data.gl_data == 'Scrap'){
+                    document.getElementById("id_disposal_amt").disabled = "true";
+                    document.getElementById("id_salvage_amt").removeAttribute('disabled');
+                }else{
+                    document.getElementById("id_disposal_amt").disabled = "true";
+                    document.getElementById("id_salvage_amt").disabled = "true";
+                }
+            })
+            .catch(errorMsg => { console.log(errorMsg); });
+        });
+</script>
+
+{% endblock %}

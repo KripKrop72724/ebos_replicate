@@ -1,0 +1,120 @@
+.grp-module h2{
+    background-image: linear-gradient(to right, #6fc071,#189ba5);
+    text-shadow: none;
+    color: #fff;
+}
+
+.grp-module h2 a{
+
+    color: #fff;
+}
+a {
+    text-decoration: none;
+    color: #222;
+    cursor: pointer;
+}
+
+.grp-module {
+    background: #e7f6f0;
+    border: 1px solid #cfeed0;
+}
+
+.grp-module h3 {
+    background-image: linear-gradient(#bbecbc,#9dd8dc);
+}
+
+table.grp-table thead th {
+    background-image: linear-gradient(to right, #6fc071,#6fc071);
+}
+
+table.grp-table thead th a{
+    color: #000;
+}
+
+input[type="submit"]{
+    background-image: linear-gradient(to right, #6fc071,#189ba5);
+}
+
+.grp-submit-row.grp-fixed-footer>ul>li{
+    background: #047298;
+    padding: 2px !important;
+}
+
+.grp-submit-row input.grp-button{
+    opacity: 1;
+}
+
+#grp-navigation{
+    background-image: linear-gradient(to right, #6fc071,#189ba5);
+    color: #fff;
+}
+
+#admin_menu_container{
+    background-image: linear-gradient(to right, #6fc071,#189ba5);
+}
+
+#grp-user-tools{
+    margin: 10px -10px 0 0;
+    border-left: 0px solid #090909;
+}
+
+#grp-navigation a {
+    color: #fff;
+}
+
+#admin_menu_container .tabs ul li.active a{
+    background : #e7f6f0;
+
+}
+
+#admin_menu_container .tabs ul li a{
+    background-image: linear-gradient(to right, #6fc071,#189ba5);
+    border-right: 1px solid #fff;
+}
+
+#admin_menu_container .tabs ul li a:hover{
+    background: #e7f6f0;
+    color : #000;
+}
+
+
+#admin_menu_container .tabs ul li .smenu .tlist li:hover a {
+    background: #128dae;
+}
+
+h1#grp-admin-title{
+    font-size: 14px;
+}
+
+body.grp-login .grp-module-login h1{
+    background-image: linear-gradient(to right, #6fc071,#189ba5);
+    border: 1px solid #128dae;
+    font-size: 28px;
+
+
+}
+
+body.grp-login .grp-module-login h1 span.grp-current-page{
+    background-image: linear-gradient(to right, #6fc071,#189ba5);
+    text-align: center;
+}
+
+input[type="submit"]:hover{
+
+    background-image: linear-gradient(#047298,#047298);
+}
+
+#admin_menu_container .tabs ul li .smenu:hover a{
+    color: #fff;
+}
+
+#admin_menu_container .tabs ul li .smenu:hover a{
+
+    background-color: #128dae;
+}
+
+.grp-group>h2{
+    background-image: linear-gradient(#6fc071,#189ba5);
+    color: #fff;
+    text-shadow: none;
+}

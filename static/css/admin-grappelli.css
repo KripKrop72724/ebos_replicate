@@ -1,0 +1,25 @@
+/* Gl voucher styles */
+.total-vou{
+    font-weight: bold;
+}
+
+input[type=number] {
+    max-width: 100px;
+    text-align: right;
+}
+
+.bcurr_debit>div,
+.bcurr_credit>div,
+.fcurr_debit>div,
+.fcurr_credit>div,
+.curr_rate>div,
+.number {
+    text-align: right;
+}
+
+
+/* no-more-warnings.css */
+
+.timezonewarning {
+    display: none;
+}

@@ -1,0 +1,395 @@
+{% extends "admin/change_form.html" %}
+
+{% block field_sets %}
+
+{{block.super}}
+
+<script>
+    var baseCurrId;
+    var curr_rate = 0
+    var baseCurr;
+    // console.log({{ original.vou_date|date:"M d, Y" }})
+    // on change division
+    if (document.getElementById("id_division")){
+        document.getElementById("id_division").addEventListener('change', function(e){
+            let division = e.target.value;
+
+            // Url for the request
+            var url = 'get_t10cfg10/' + division;
+            // Making our request
+            fetch(url, {
+                    method: 'GET',
+                    headers:{
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+                },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // 'vou_curr'   >>  default to base_curr, but selectable from T01Cur10
+                    if(data.division_curr){
+                        document.getElementById("id_vou_curr").value = data.division_curr;
+                        baseCurrId = data.division_curr;
+                        baseCurr = data.base_curr;
+                        // disable the fcurr debit and credit if basecurr = vou_curr
+                        allfCurrdebit = document.getElementsByClassName("fcurr_debit")
+                        allfCurrcredit = document.getElementsByClassName("fcurr_credit")
+
+                        for (var i = 0; i < allfCurrdebit.length; i++) {
+                            allfCurrdebit[i].querySelector("input").disabled = "true";
+                            allfCurrcredit[i].querySelector("input").disabled = "true";
+                        }
+                    }
+                })
+                .catch(errorMsg => { console.log(errorMsg); });
+            });
+    }
+
+    // on change vou_curr
+    var select = document.getElementById("id_vou_curr")
+    console.log(select)
+    if (select){
+        select.addEventListener('change', function(e){
+            let vouCurr = select.options[select.selectedIndex].text;
+            let vouCurrId = select.options[select.selectedIndex].value;
+            var bCurrDebitCredit;
+            // bcurr_debit ,  bcurr_credit  >> editable  if vou_curr = base_curr
+            // foreign_curr  >> blank if vou_curr = base_curr,  otherwise copy vou_curr as foreign_curr and keep it read only.
+            // fcurr_debit, fcurr_credit  editable  if  vou_curr is NOT the base_curr
+            allBCurrDebit = document.getElementsByClassName("bcurr_debit")
+            allBCurrCredit = document.getElementsByClassName("bcurr_credit")
+            allForeignCurr = document.getElementsByClassName("foreign_curr")
+            allfCurrDebit = document.getElementsByClassName("fcurr_debit")
+            allfCurrCredit = document.getElementsByClassName("fcurr_credit")
+            allCurrRate = document.getElementsByClassName("curr_rate")
+
+            if(vouCurr!=baseCurr){
+                // calculate currency rate
+                if (document.getElementById("id_vou_date")){
+                    var vou_date = document.getElementById("id_vou_date").value
+                }else{
+                    var vou_date = '{{original.vou_date}}'
+                }
+                // Url for the request
+                var url = 'get_curr_rate/' + vouCurrId +'/'+ baseCurrId +'/'+ vou_date;
+                // Making our request
+                fetch(url, {
+                        method: 'GET',
+                        headers:{
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+                    },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        curr_rate = data.curr_rate;
+                        bCurrDebitFunc()
+                    })
+                    .catch(errorMsg => { console.log(errorMsg); });
+            }
+
+            function bCurrDebitFunc(){
+                for (var i = 0; i < allBCurrDebit.length; i++) {
+
+                    allCurrRate[i].getElementsByTagName('div')[0].innerHTML  = curr_rate;
+                    allBCurrDebit[i].querySelector('input').value = Number(0).toFixed(2)
+                    allBCurrCredit[i].querySelector('input').value = Number(0).toFixed(2)
+                    allfCurrDebit[i].querySelector('input').value = Number(0).toFixed(2)
+                    allfCurrCredit[i].querySelector('input').value = Number(0).toFixed(2)
+
+                    if(vouCurr==baseCurr){
+                        allBCurrDebit[i].querySelector('input').removeAttribute('disabled');
+                        allBCurrCredit[i].querySelector('input').removeAttribute('disabled');
+                        allForeignCurr[i].getElementsByTagName('div')[0].innerHTML  = '-';
+                        allfCurrDebit[i].querySelector('input').disabled = "true";
+                        allfCurrCredit[i].querySelector('input').disabled = "true";
+                    }else{
+                        allBCurrDebit[i].querySelector('input').disabled = "true";
+                        allBCurrCredit[i].querySelector('input').disabled = "true";
+                        allForeignCurr[i].getElementsByTagName('div')[0].innerHTML  = vouCurr;
+                        allfCurrDebit[i].querySelector('input').removeAttribute('disabled');
+                        allfCurrCredit[i].querySelector('input').removeAttribute('disabled');
+                    }
+                }
+            }
+
+            bCurrDebitFunc()
+
+        });
+
+    }
+
+    // on change voucher type
+    vou_type_event = document.getElementById("id_vou_type");
+    if(vou_type_event){
+        vou_type_event.addEventListener('change', function(e){
+            let vou_type = e.target.value;
+
+            if(vou_type){
+                // Url for the request
+                var url = 'get_t10coa10/' + vou_type;
+                // Making our request
+                fetch(url, {
+                        method: 'GET',
+                        headers:{
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+                    },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // vou_coa  >>  dropdown list filtered  T01Voc10.subledger_cat = T01Coa10.coa_sl_cat and  T01Voc10.subledger_type = T01Coa10.coa_sl_type
+                        var options = '<option value="">---------</option>';
+                        for (var i = 0; i < data.vou_coa.length; i++) {
+                            options += '<option value="' + data.vou_coa[i].id + '">' + data.vou_coa[i].account_name + '</option>';
+                        }
+
+                        let allVouCoa = document.getElementsByClassName("vou_coa")
+                        for (var i = 0; i < allVouCoa.length; i++) {
+                            vouCoaSelect = allVouCoa[i].querySelector("select");
+                            vouCoaSelect.setAttribute("onchange", "vouCoaFunction(this)");
+                            vouCoaSelect.innerHTML  = options;
+                        }
+
+                    })
+                    .catch(errorMsg => { console.log(errorMsg); });
+            }
+        });
+    }
+
+    // on change vou_coa
+    function vouCoaFunction(e){
+        var id = e.id;
+        console.log(id)
+        sub_id = id.replace("coa", "subledger")
+        console.log(sub_id)
+        if (document.querySelectorAll("#id_gld_header_set-0-vou_subledger"))
+            console.log('true')
+        // Url for the request
+        var url = window.location.origin + '/admin/ebos2210/t10jvm10/add/get_t01sld10/' + e.value;
+        // Making our request
+        fetch(url, {
+                method: 'GET',
+                headers:{
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+            },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                var options = '<option value="">---------</option>';
+                for (var i = 0; i < data.vou_subledger.length; i++) {
+                    options += '<option value="' + data.vou_subledger[i].id + '">' + data.vou_subledger[i].subledger_name + '</option>';
+                }
+                console.log("#" + sub_id)
+                document.querySelectorAll("#" + sub_id)[0].innerHTML  = options;
+
+            })
+            .catch(errorMsg => { console.log(errorMsg); });
+        }
+
+    window.onload = function() {
+        var allVouCoa = document.getElementsByClassName("vou_coa")
+        console.log(allVouCoa.length)
+        for (var i = 0; i < allVouCoa.length; i++) {
+            if (allVouCoa[i].querySelector("select")){
+                vouCoaSelect = allVouCoa[i].querySelector("select");
+                vouCoaSelect.setAttribute("onchange", "vouCoaFunction(this)");
+            }else{
+                break;
+            }
+        }
+
+        // Replace inline last row
+        document.getElementById('gld_header_set-group').getElementsByClassName('grp-table')[0].innerHTML += '<div class="grp-module grp-tbody">' +
+                                                                                                                '<div class="grp-tr">' +
+                                                                                                                    '<div class="grp-td"><p class="total-vou">Total</p></div>' +
+                                                                                                                    '<div class="grp-td"></div>'+
+                                                                                                                    '<div class="grp-td"><p class="bcurr_db_t number">0.00</p></div>' +
+                                                                                                                    '<div class="grp-td"><p class="bcurr_cr_t number">0.00</p></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"><p class="fcurr_db_t number">0.00</p></div>'+
+                                                                                                                    '<div class="grp-td"><p class="fcurr_cr_t number">0.00</p></div>'+
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                    '<div class="grp-td"></div>' +
+                                                                                                                '</div>'+
+                                                                                                            '</div>';
+
+
+        // bcurr debit calculate the total values
+        let bcurrDbInput = document.getElementsByClassName("bcurr_debit")
+        let bcurr_db_numbers = [];
+
+        function bcurrDbFunc(){
+            let bcurr_db_total = 0;
+            bcurr_db_numbers = [];
+
+            for (let i = 0; i < bcurrDbInput.length; i++) {
+                let value = 0
+                let dbInput = bcurrDbInput[i].querySelector('input')
+                let dbInputReadonly = bcurrDbInput[i].querySelector('div')
+                if (dbInput){
+                    value = dbInput.value
+                }else if (dbInputReadonly){
+                    value = dbInputReadonly.innerText
+                }
+
+                bcurr_db_numbers.push(value)
+            }
+            // dispaly the total
+            bcurr_db_numbers.map((num) => bcurr_db_total+=parseFloat(num))
+            document.getElementsByClassName('bcurr_db_t')[0].innerText = Number(bcurr_db_total).toFixed(2)
+        }
+        bcurrDbFunc()
+
+        // On click of add-row, increase the rows length
+        // document.getElementsByClassName('add-row').children().addEventListener('click', function(e){
+        //     bcurrDbInput = document.getElementsByClassName("bcurr_debit");
+        //     console.log(bcurrDbInput.length)
+
+        // })
+
+        // on input function
+        for (let index = 0; index < bcurrDbInput.length; index++) {
+            if (bcurrDbInput[index].querySelector('input')){
+                bcurrDbInput[index].querySelector('input').addEventListener('input', function(e){
+                    let sum = 0
+                    value = (e.target.value) ? (e.target.value) : 0
+                    bcurr_db_numbers.splice(index, 1, value);
+                    bcurr_db_numbers.map((num) => sum+=parseFloat(num))
+                    bcurr_db_total = sum
+                    document.getElementsByClassName('bcurr_db_t')[0].innerText = bcurr_db_total.toFixed(2)
+                });
+            }else{
+                break;
+            }
+        }
+
+        // bcurr credit onchange calculate the total values
+        let bcurrCRInput = document.getElementsByClassName("bcurr_credit")
+        let bcurr_cr_numbers = [];
+        function bcurrCrFunc(){
+            let bcurr_cr_total = 0;
+            bcurr_cr_numbers = [];
+            for (let i = 0; i < bcurrCRInput.length; i++) {
+                let value = 0
+                let CRInput = bcurrCRInput[i].querySelector('input')
+                let CRInputReadonly = bcurrCRInput[i].querySelector('div')
+
+                if (CRInput){
+                    value = CRInput.value
+                }else if (CRInputReadonly){
+                    value = CRInputReadonly.innerText
+                }
+
+                bcurr_cr_numbers.push(value)
+            }
+
+            // dispaly the total
+            bcurr_cr_numbers.map((num) => bcurr_cr_total+=parseFloat(num))
+            document.getElementsByClassName('bcurr_cr_t')[0].innerText = bcurr_cr_total.toFixed(2)
+        }
+        bcurrCrFunc()
+
+        // on input function
+        for (let index = 0; index < bcurrCRInput.length; index++) {
+            if (bcurrCRInput[index].querySelector('input')){
+                bcurrCRInput[index].querySelector('input').addEventListener('input', function(e){
+                    let sum = 0
+                    value = (e.target.value) ? (e.target.value) : 0
+                    bcurr_cr_numbers.splice(index, 1, value);
+                    bcurr_cr_numbers.map((num) => sum+=parseFloat(num))
+                    bcurr_cr_total = sum
+                    document.getElementsByClassName('bcurr_cr_t')[0].innerText = bcurr_cr_total.toFixed(2)
+                });
+            }else{
+                break;
+            }
+        }
+
+
+        // fcurr debit onchange calculate the total values
+        let fcurrDbInput = document.getElementsByClassName("fcurr_debit")
+        let fcurr_db_total = 0;
+        let fcurr_db_numbers = [];
+        for (let i = 0; i < fcurrDbInput.length; i++) {
+            let value = 0
+            let fDBInput = fcurrDbInput[i].querySelector('input')
+            let fDBInputReadonly = fcurrDbInput[i].querySelector('div')
+
+            if (fDBInput){
+                value = fDBInput.value
+            }else if (fDBInputReadonly){
+                value = fDBInputReadonly.innerText
+            }
+
+            fcurr_db_numbers.push(value)
+        }
+        // dispaly the total
+        fcurr_db_numbers.map((num) => fcurr_db_total+=parseFloat(num))
+        document.getElementsByClassName('fcurr_db_t')[0].innerText = fcurr_db_total.toFixed(2)
+
+        // on input function
+        for (let index = 0; index < fcurrDbInput.length; index++) {
+            if (fcurrDbInput[index].querySelector('input')){
+                fcurrDbInput[index].querySelector('input').addEventListener('input', function(e){
+                    let sum = 0
+                    value = (e.target.value) ? (e.target.value) : 0
+                    fcurr_db_numbers.splice(index, 1, value);
+                    fcurr_db_numbers.map((num) => sum+=parseFloat(num))
+                    fcurr_db_total = sum
+                    document.getElementsByClassName('fcurr_db_t')[0].innerText = fcurr_db_total.toFixed(2)
+                    // bcurr debit based on fcurr credit, if vou_curr != base_curr
+                    bcurrDbInput[index].querySelector('input').value = (parseFloat(value)*curr_rate).toFixed(2)
+                    bcurrDbFunc()
+                });
+            }else{break;}
+        }
+
+        // fcurr credit onchange calculate the total values
+        let fcurrCRInput = document.getElementsByClassName("fcurr_credit")
+        let fcurr_cr_total = 0;
+        let fcurr_cr_numbers = [];
+        for (let i = 0; i < fcurrCRInput.length; i++) {
+            let value = 0
+            let fCRInput = fcurrCRInput[i].querySelector('input')
+            let fCRInputReadonly = fcurrCRInput[i].querySelector('div')
+
+            if (fCRInput){
+                value = fCRInput.value
+            }else if (fCRInputReadonly){
+                value = fCRInputReadonly.innerText
+            }
+
+            fcurr_cr_numbers.push(value)
+        }
+        // dispaly the total
+        fcurr_cr_numbers.map((num) => fcurr_cr_total+=parseFloat(num))
+        document.getElementsByClassName('fcurr_cr_t')[0].innerText = fcurr_cr_total.toFixed(2)
+
+        // on input function
+        for (let index = 0; index < fcurrCRInput.length; index++) {
+            if (fcurrCRInput[index].querySelector('input')){
+                fcurrCRInput[index].querySelector('input').addEventListener('input', function(e){
+                    let sum = 0
+                    value = (e.target.value) ? (e.target.value) : 0
+                    fcurr_cr_numbers.splice(index, 1, value);
+                    fcurr_cr_numbers.map((num) => sum+=parseFloat(num))
+                    fcurr_cr_total = sum
+                    document.getElementsByClassName('fcurr_cr_t')[0].innerText = fcurr_cr_total.toFixed(2)
+                    // bcurr credit based on fcurr credit, if vou_curr != base_curr
+                    bcurrCRInput[index].querySelector('input').value = (parseFloat(value)*curr_rate).toFixed(2)
+                    bcurrCrFunc()
+                });
+            }
+        }
+    }
+
+</script>
+{% endblock %}

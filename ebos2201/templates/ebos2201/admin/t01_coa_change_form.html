@@ -1,0 +1,89 @@
+{% extends "admin/change_form.html" %}
+
+{% block field_sets %}
+
+{{block.super}}
+
+<script>
+    let parent = document.getElementById('id_parent');
+    let coaCtr = document.getElementById('id_coa_control');
+    let accountGroup = document.getElementById('id_account_group');
+    let coaSlCat = document.getElementById('id_coa_sl_cat');
+    let coaSlType = document.getElementById('id_coa_sl_type');
+
+    function set_account_group(group){
+        // account_group = parent.account_group and disable
+        accountGroup.value = group;
+        accountGroup.disabled = "true";
+    }
+
+    function change_with_coa_control(coa_ctr){
+        if(coa_ctr == '1'){
+            // coa_sl_cat blank and disable for rollup account
+            coaSlCat.value = '';
+            coaSlCat.disabled = "true";
+
+            // coa_sl_type blank and readonly for rollup account
+            coaSlType.value = '';
+            coaSlType.disabled = "true";
+
+            document.getElementById('add_id_coa_sl_type').removeAttribute('href');
+
+        }else{
+            // coa_sl_cat enable
+            coaSlCat.removeAttribute('disabled');
+
+            // coa_sl_type enable
+            coaSlType.removeAttribute('disabled');
+        }
+
+    }
+
+    if(parent.value){
+        // Inherit parent account_group
+        let parentAccountGroup = "{{ original.parent.account_group }}"
+        set_account_group(parentAccountGroup)
+    }
+
+    if(coaCtr.value){
+        change_with_coa_control(coaCtr.value)
+    }
+
+    // on change of parent
+    if(parent){
+        document.querySelector('select[name="parent"]').onchange=function(e) {
+            let parentId = e.target.value;
+            if(parentId != ''){
+                // Url for the request
+                var url = 'get_parent_account_grp/' + parentId;
+                // Making our request
+                fetch(url, {
+                        method: 'GET',
+                        headers:{
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+                    },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        set_account_group(data.parent_account_grp)
+                    })
+                    .catch(errorMsg => { console.log(errorMsg); });
+
+            }else{
+                // default account_group=1 and enable
+                let acct_grp = "{{ original.account_group }}"
+                accountGroup.value = acct_grp ? object_id : '1';
+                accountGroup.removeAttribute('disabled');
+            }
+        }
+    }
+
+    // on change of coa_control
+    if(coaCtr){
+        coaCtr.addEventListener('change', function(e) {
+            change_with_coa_control(e.target.value);
+        });
+    }
+</script>
+{% endblock %}

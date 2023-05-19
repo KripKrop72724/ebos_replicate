@@ -1,0 +1,17 @@
+/* Side by side grid in inlines  */
+form > div{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+form > div > fieldset{
+    flex: 0 0 100%;
+}
+
+form > div > #allocation_db-group, form > div > #allocation_cr-group{
+    flex: 0 0 50%;
+}
+
+.tabular{
+    min-width: 0px !important;
+}

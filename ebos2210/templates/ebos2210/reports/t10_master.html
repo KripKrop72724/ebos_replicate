@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title }}</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 1cm;
+        font-family: Helvetica;
+        @frame footer_frame {           /* Another static Frame */
+          -pdf-frame-content: footer_content;
+          left: 270pt; top: 810pt; height: 20pt;
+          font-size: 6pt;
+        }
+      }
+
+      body{
+        font-size: 13px;
+      }
+
+      .company-info{
+        width: 40%;
+      }
+
+      .current_date{
+        font-size: 12px;
+        text-align: right;
+      }
+
+      .company-name{
+        font-weight: bold;
+        font-size: 18px;
+        padding-bottom: -20px;
+      }
+
+      .logo{
+        text-align: right;
+      }
+
+      img{
+        width: 100px;
+        height: 100px;
+      }
+
+      .report-title{
+        width: fit-content;
+        font-weight: 500;
+        font-size: 22px;
+        text-decoration: underline;
+        padding-bottom: 3px;
+        text-align: center;
+      }
+
+      .report-subtitle{ 
+        padding-top: -30px;       
+        width: fit-content;
+        text-align: center;
+        text-decoration: underline;
+      }
+
+      .content-footer{
+        border-top: 2px solid #000;
+        padding-top: 5px;
+        padding-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- heading one start  -->
+    <div class="current_date">
+      <span>{% now "jS F Y H:i" %}</span>
+    </div>
+    <div class="company">
+      <table>
+        <tr>
+          <td class="company-info">
+            <h1 class="company-name">{{ company.company_name }}</h1>
+            <div class="company-address">{{ company.company_address }}</div>
+            <div class="company-location">{{ company.company_location }}</div>
+          </td>
+          <td class="logo">
+            <img src="{{ company_logo }}" alt="no image">
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- heading two start   -->
+    <h2 class="report-title">{{ title }}</h2>
+    
+    {% if sub_title %}
+    <h3 class="report-subtitle">{{ sub_title }}</h3>
+    {% endif %}
+
+    {% block content %}
+    {% endblock content %}
+
+  <!-- Page number  -->
+  <div id="footer_content"> Page <pdf:pagenumber> </div>
+  </body>
+</html>

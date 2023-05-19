@@ -1,0 +1,57 @@
+{% extends "admin/change_list.html" %}
+
+{% block result_list %}
+
+    {{block.super}}
+
+    <script>
+        // Open pdf in new tab
+        if(document.getElementsByClassName('grp-messagelist')[0]){
+            if(document.getElementsByClassName('grp-messagelist')[0].getElementsByClassName('grp-info').length > 0){
+                window.open('{{ FILE_PATH }}', '_blank');
+            }
+        }
+
+        // Print button call the function
+        function print_voucher_js(id){
+            // PDF create
+            var url = 'custom_print_button/' + id;
+            fetch(url, {
+                    method: 'GET',
+                    headers:{
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    window.open(data.file_path, '_blank');
+                    location.reload(true);
+                })
+                .catch(errorMsg => { console.log(errorMsg); });
+        }
+
+        // cheque Print button call the function
+        function print_cheque_js(id){
+            // PDF create
+            var url = 'cheque_print_button/' + id;
+            fetch(url, {
+                    method: 'GET',
+                    headers:{
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.file_path){
+                        location.reload(true);
+                        window.open(data.file_path, '_blank');
+                    }else{
+                        location.reload(true);
+                    }
+                })
+                .catch(errorMsg => { console.log(errorMsg); });
+        }
+    </script>
+{% endblock %}

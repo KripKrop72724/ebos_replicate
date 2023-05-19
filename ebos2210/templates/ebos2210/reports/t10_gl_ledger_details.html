@@ -1,0 +1,155 @@
+{% extends 'ebos2210/reports/t10_master.html' %}
+{% load gl_balance %}
+
+{% block content %}
+    <style>
+        .ul {
+            list-style: none !important;
+        }
+        .opening-balance {
+            text-align: right;
+        }
+        p{
+            margin: 0;
+            margin-bottom: 4px;
+        }
+        tr{
+            vertical-align: center;
+        }
+        .period {
+            text-align: right;
+        }
+        .content-heading{
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+            padding-top: 5px;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        thead > tr > th{
+            text-align: center;
+        }
+        tbody > tr > td{
+            vertical-align: top;
+        }
+        .sub-no{
+            width: 10%;
+        }
+        .sub-name{
+            width: 25%;
+        }
+    </style>
+
+    <!-- header start  -->
+    <div class="header-container" style="margin: 18px 0;">
+        <table>
+            <tr>
+                <td style="vertical-align: bottom; width: 70%;"><p><b>A/C# :</b> &nbsp;&nbsp;&nbsp; {{ coa|default_if_none:"----" }}</p></td>
+                <td>
+                    <table>
+                        <tr>
+                            <td><b>Period From:</b></td>
+                            <td>{{ dt_from|date:"d/m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Period To:</b></td>
+                            <td>{{ dt_to|date:"d/m/Y" }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!-- header end  -->
+
+    <!-- main content start  -->
+    <table repeat="1">
+        <thead>
+            <tr class="content-heading">
+                <th>Ledger A/c </th>
+                <th>Ledger Name</th>
+                <th>
+                    <p>Total</p>
+                    <table>
+                        <tr>
+                            <th>Debit</th>
+                            <th>Credit</th>
+                        </tr>
+                    </table>
+                </th>
+                <th>
+                    <p>Net Balance</p>
+                    <table>
+                        <tr>
+                            <th>Debit</th>
+                            <th>Credit</th>
+                        </tr>
+                    </table>
+                </th>
+            </tr>
+        </thead>
+        <tbody >
+            {% for subledger in subledgers %}
+            <tr style="padding-top: 5px;">                
+                <td class="text-center sub-no">{{ subledger.vou_subledger__subledger_no }}</td>
+                <td class="sub-name">{{ subledger.vou_subledger__subledger_name }}</td>
+                <td>
+                    <table>
+                        <tr>
+                            <td class="text-right">{{ subledger.bcurr_debit_sum|handle_negative }}</td>
+                            <td class="text-right">{{ subledger.bcurr_credit_sum|handle_negative }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            {% if subledger.amount > 0 %}
+                                <td class="text-right">{{ subledger.amount|handle_negative }}</td>
+                                <td class="text-right">0.00</td>
+                            {% else %}
+                                <td class="text-right">0.00</td>
+                                <td class="text-right">{{ subledger.amount|handle_negative }}</td>
+                            {% endif %}
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td style="padding-top: 5px; text-align: center;" colspan="4">No ledger found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr style="padding-top: 5px; border-top: 1px solid black; font-weight: bold;">
+                <th class="opening-balance" colspan="2">
+                    Grand Total
+                </th>
+                <td>
+                    <table>
+                        <tr>
+                            <th class="text-right">{{ debit_total|handle_negative }}</th>
+                            <th class="text-right">{{ credit_total|handle_negative }}</th>
+                        </tr>
+                    </table>
+                </td>
+                
+                <td style="text-align: right;">
+                    <table>
+                        <tr>
+                            <th class="text-right">{{ net_debit_grand_total|handle_negative }}</th>
+                            <th class="text-right">{{ net_credit_grand_total|handle_negative }}</th>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+    <!-- main content end  -->
+
+{% endblock content %}
